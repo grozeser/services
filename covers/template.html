@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Обложки кворков</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #120d2b; --bg2: #24145c; --primary: #7c3aed; --lilac: #c4b5fd;
+    --green: #22c55e; --card: #1f1846; --card2: #2d2163; --line: #4c3b9a; --white: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 660px; height: 440px; overflow: hidden; background: var(--bg); }
+  /* Обложка 660×440 (3:2), рендерится с масштабом 2 → 1320×880 */
+  .cover {
+    position: relative; width: 660px; height: 440px; overflow: hidden; color: var(--white);
+    background:
+      radial-gradient(420px 320px at 88% 30%, rgba(124, 58, 237, .55), transparent 70%),
+      radial-gradient(300px 260px at 10% 105%, rgba(34, 197, 94, .18), transparent 70%),
+      linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+    font-family: 'Manrope', system-ui, sans-serif;
+  }
+  .cover::before { /* тонкая сетка для глубины */
+    content: ''; position: absolute; inset: 0; opacity: .07;
+    background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .text { position: absolute; left: 40px; top: 40px; width: 310px; display: flex; flex-direction: column; gap: 14px; }
+  .kicker { align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: rgba(124, 58, 237, .35);
+    border: 1px solid rgba(196, 181, 253, .45); color: var(--lilac); font-weight: 700; font-size: 14px; letter-spacing: .04em; }
+  h1 { font-family: 'Unbounded', system-ui, sans-serif; font-weight: 800; font-size: 40px; line-height: 1.04; letter-spacing: -.01em; }
+  h1 em { font-style: normal; color: var(--lilac); }
+  .sub { font-size: 19px; font-weight: 700; color: #ddd6fe; line-height: 1.3; }
+  .chips { position: absolute; left: 40px; bottom: 36px; display: flex; gap: 8px; flex-wrap: wrap; width: 360px; }
+  .chip { padding: 8px 14px; border-radius: 12px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16);
+    font-weight: 700; font-size: 16px; }
+  .chip.go { background: var(--green); border-color: var(--green); color: #052e16; }
+  .art { position: absolute; right: 22px; top: 50%; transform: translateY(-50%) rotate(-3deg); width: 250px; height: 268px;
+    filter: drop-shadow(0 24px 40px rgba(0, 0, 0, .45)); }
+</style>
+</head>
+<body>
+<div class="cover" id="cover">
+  <div class="text">
+    <span class="kicker" id="kicker"></span>
+    <h1 id="title"></h1>
+    <p class="sub" id="sub"></p>
+  </div>
+  <div class="chips" id="chips"></div>
+  <svg class="art" id="art" viewBox="0 0 280 300" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+<script>
+// Общие элементы иллюстраций
+const C = { card: '#1f1846', card2: '#2d2163', line: '#4c3b9a', p: '#7c3aed', l: '#c4b5fd', g: '#22c55e', w: '#ffffff' };
+const win = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="${C.card}" stroke="${C.line}" stroke-width="2"/>
+  <circle cx="${x + 16}" cy="${y + 15}" r="4" fill="#f87171"/><circle cx="${x + 30}" cy="${y + 15}" r="4" fill="#fbbf24"/><circle cx="${x + 44}" cy="${y + 15}" r="4" fill="${C.g}"/>`;
+const bar = (x, y, w, c = C.w, o = .85, h = 9) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="${c}" opacity="${o}"/>`;
+const phone = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22" fill="${C.card2}" stroke="${C.l}" stroke-width="2.5"/>
+  <rect x="${x + w / 2 - 18}" y="${y + 8}" width="36" height="6" rx="3" fill="${C.line}"/>`;
+const check = (cx, cy, r = 11) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${C.g}"/><path d="M${cx - 5} ${cy} l3.5 4 l6.5 -8" fill="none" stroke="#052e16" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+const ART = {
+  tilda: win(0, 20, 240, 190) + bar(20, 60, 140) + bar(20, 78, 100, C.l, .7) + `<rect x="20" y="100" width="92" height="30" rx="10" fill="${C.p}"/>`
+    + `<rect x="130" y="56" width="92" height="74" rx="12" fill="${C.card2}"/><circle cx="160" cy="84" r="12" fill="${C.l}" opacity=".7"/><path d="M134 126 l30 -26 l22 18 l14 -10 l18 18z" fill="${C.p}" opacity=".8"/>`
+    + bar(20, 150, 60, C.w, .5) + bar(95, 150, 60, C.w, .5) + bar(170, 150, 50, C.w, .5)
+    + phone(170, 110, 104, 180) + bar(184, 140, 70) + bar(184, 156, 50, C.l, .7) + `<rect x="184" y="176" width="76" height="52" rx="10" fill="${C.card}"/><rect x="184" y="240" width="76" height="24" rx="9" fill="${C.g}"/>`,
+  code: win(0, 30, 250, 200) + [[22, 70, 60, C.p], [90, 70, 80, C.l], [36, 90, 120, C.w], [36, 110, 90, C.g], [50, 130, 110, C.w], [50, 150, 70, C.l], [36, 170, 100, C.w], [22, 190, 50, C.p]]
+    .map(([x, y, w, c]) => bar(x, y, w, c, .9)).join('')
+    + `<g transform="translate(150 150)">` + win(0, 0, 124, 120) + bar(16, 38, 70) + bar(16, 54, 50, C.l, .7) + `<rect x="16" y="74" width="54" height="22" rx="8" fill="${C.p}"/></g>`
+    + `<text x="190" y="22" font-family="Unbounded" font-weight="800" font-size="34" fill="${C.l}">&lt;/&gt;</text>`,
+  fix: win(0, 20, 250, 220) + bar(20, 58, 130) + bar(20, 76, 90, C.l, .7)
+    + `<rect x="16" y="98" width="218" height="58" rx="10" fill="none" stroke="${C.p}" stroke-width="3" stroke-dasharray="8 6"/>`
+    + `<rect x="26" y="108" width="60" height="38" rx="8" fill="${C.card2}"/>` + bar(96, 114, 120) + bar(96, 132, 80, C.l, .7)
+    + bar(20, 176, 210, C.w, .35) + bar(20, 196, 150, C.w, .35)
+    + `<path d="M196 150 l0 46 l12 -12 l9 20 l9 -4 l-9 -20 l17 0z" fill="${C.w}" stroke="${C.bg || '#120d2b'}" stroke-width="2"/>`
+    + `<g transform="translate(150 230)"><rect width="128" height="66" rx="14" fill="${C.card2}" stroke="${C.line}" stroke-width="2"/>`
+    + check(22, 20, 9) + bar(38, 16, 70) + check(22, 46, 9) + bar(38, 42, 54) + `</g>`,
+  bot: phone(60, 0, 170, 300) + `<circle cx="88" cy="40" r="12" fill="${C.p}"/>` + bar(108, 32, 70) + bar(108, 46, 40, C.l, .6, 7)
+    + `<rect x="76" y="70" width="112" height="44" rx="14" fill="${C.p}"/>` + bar(88, 82, 80) + bar(88, 98, 56, C.w, .7)
+    + `<rect x="112" y="126" width="102" height="34" rx="14" fill="${C.w}"/>` + bar(124, 139, 66, '#1f1846', .8)
+    + `<rect x="76" y="172" width="120" height="44" rx="14" fill="${C.p}"/>` + bar(88, 184, 90) + bar(88, 200, 60, C.w, .7)
+    + `<rect x="76" y="230" width="66" height="30" rx="12" fill="none" stroke="${C.g}" stroke-width="2.5"/><rect x="150" y="230" width="66" height="30" rx="12" fill="none" stroke="${C.g}" stroke-width="2.5"/>`
+    + bar(88, 241, 40, C.g, .9) + bar(162, 241, 40, C.g, .9)
+    + `<g transform="translate(206 210)"><circle r="30" fill="${C.g}"/><rect x="-14" y="-10" width="28" height="22" rx="7" fill="#052e16"/><circle cx="-6" cy="1" r="3" fill="${C.g}"/><circle cx="6" cy="1" r="3" fill="${C.g}"/><rect x="-2" y="-18" width="4" height="8" rx="2" fill="#052e16"/></g>`,
+  ai: `<rect x="0" y="40" width="200" height="56" rx="18" fill="${C.w}"/>` + bar(18, 56, 140, '#1f1846', .8) + bar(18, 72, 100, '#1f1846', .5)
+    + `<rect x="60" y="110" width="210" height="80" rx="18" fill="${C.p}"/>` + bar(78, 128, 160) + bar(78, 146, 170, C.w, .8) + bar(78, 164, 120, C.w, .6)
+    + `<g transform="translate(20 210)">` + [0, 1, 2].map((i) => `<rect x="${i * 62}" y="0" width="52" height="66" rx="8" fill="${C.card2}" stroke="${C.line}" stroke-width="2"/>${bar(i * 62 + 10, 16, 32, C.l, .7, 6)}${bar(i * 62 + 10, 28, 26, C.w, .5, 6)}${bar(i * 62 + 10, 40, 30, C.w, .5, 6)}`).join('') + `</g>`
+    + `<path d="M236 214 C240 236 244 240 266 244 C244 248 240 252 236 274 C232 252 228 248 206 244 C228 240 232 236 236 214Z" fill="${C.g}"/>`
+    + `<path d="M232 0 C235 16 238 19 254 22 C238 25 235 28 232 44 C229 28 226 25 210 22 C226 19 229 16 232 0Z" fill="${C.l}"/>`,
+  parse: [0, 1, 2].map((i) => `<g transform="translate(0 ${20 + i * 88})">` + win(0, 0, 104, 72).replace(/r="4"/g, 'r="3"') + bar(14, 34, 60, C.w, .6, 7) + bar(14, 48, 40, C.l, .6, 7) + `</g>`).join('')
+    + `<path d="M116 150 h34" stroke="${C.g}" stroke-width="5" stroke-linecap="round"/><path d="M142 138 l14 12 l-14 12" fill="none" stroke="${C.g}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`
+    + `<g transform="translate(166 40)"><rect width="114" height="220" rx="14" fill="${C.w}"/><rect width="114" height="34" rx="14" fill="${C.g}"/><rect y="20" width="114" height="14" fill="${C.g}"/>`
+    + [0, 1, 2, 3, 4, 5].map((r) => `<line x1="0" y1="${60 + r * 30}" x2="114" y2="${60 + r * 30}" stroke="#ddd6fe" stroke-width="2"/>`).join('')
+    + `<line x1="40" y1="34" x2="40" y2="220" stroke="#ddd6fe" stroke-width="2"/>`
+    + [0, 1, 2, 3, 4, 5].map((r) => bar(50, 43 + r * 30, 50 - (r % 3) * 10, '#4c1d95', .7, 7) + bar(10, 43 + r * 30, 20, C.p, .8, 7)).join('') + `</g>`,
+  flow: [['Сайт', 0, 30], ['CRM', 150, 120], ['MAX', 20, 220]].map(([t, x, y]) => `<g transform="translate(${x} ${y})"><rect width="120" height="56" rx="16" fill="${C.card2}" stroke="${C.l}" stroke-width="2.5"/><text x="60" y="36" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="20" fill="${C.w}">${t}</text></g>`).join('')
+    + `<path d="M120 58 C170 58 200 70 210 116" fill="none" stroke="${C.g}" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>`
+    + `<path d="M180 178 C170 220 160 240 142 246" fill="none" stroke="${C.g}" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>`
+    + `<circle cx="210" cy="116" r="6" fill="${C.g}"/><circle cx="142" cy="246" r="6" fill="${C.g}"/>`
+    + `<g transform="translate(232 24)"><circle r="26" fill="${C.p}"/><path d="M-8 -12 l-6 14 h10 l-4 12 l14 -18 h-10 l6 -8z" fill="${C.w}"/></g>`,
+  sheet: `<rect x="0" y="20" width="270" height="240" rx="16" fill="${C.w}"/><rect x="0" y="20" width="270" height="40" rx="16" fill="${C.g}"/><rect x="0" y="44" width="270" height="16" fill="${C.g}"/>`
+    + `<text x="16" y="47" font-family="Unbounded" font-weight="800" font-size="18" fill="#052e16">fx</text>` + bar(56, 36, 150, '#052e16', .55)
+    + [0, 1, 2, 3, 4, 5].map((r) => `<line x1="0" y1="${92 + r * 28}" x2="270" y2="${92 + r * 28}" stroke="#ddd6fe" stroke-width="2"/>`).join('')
+    + [70, 150].map((x) => `<line x1="${x}" y1="60" x2="${x}" y2="260" stroke="#ddd6fe" stroke-width="2"/>`).join('')
+    + `<rect x="150" y="64" width="120" height="196" fill="${C.p}" opacity=".12"/>`
+    + [0, 1, 2, 3, 4, 5, 6].map((r) => bar(12, 72 + r * 28, 44, '#4c1d95', .6, 7) + bar(82, 72 + r * 28, 52, '#4c1d95', .35, 7) + bar(162, 72 + r * 28, 40 + (r * 13) % 50, C.p, .8, 7)).join('')
+    + `<g transform="translate(190 200)"><rect width="90" height="88" rx="14" fill="${C.card2}" stroke="${C.l}" stroke-width="2"/>`
+    + [[14, 48], [34, 30], [54, 56], [74, 20]].map(([x, h]) => `<rect x="${x - 6}" y="${72 - h}" width="12" height="${h}" rx="3" fill="${C.g}"/>`).join('') + `</g>`,
+  server: [0, 1, 2].map((i) => `<g transform="translate(20 ${30 + i * 72})"><rect width="180" height="60" rx="14" fill="${C.card2}" stroke="${C.l}" stroke-width="2.5"/>`
+      + `<circle cx="24" cy="30" r="6" fill="${C.g}"/><circle cx="44" cy="30" r="6" fill="${i === 1 ? C.l : C.g}"/>` + bar(70, 20, 90, C.w, .5, 7) + bar(70, 34, 60, C.w, .35, 7) + `</g>`).join('')
+    + `<g transform="translate(160 186)"><rect width="110" height="100" rx="18" fill="${C.g}"/><rect x="33" y="40" width="44" height="38" rx="8" fill="#052e16"/>`
+    + `<path d="M41 40 v-10 a14 14 0 0 1 28 0 v10" fill="none" stroke="#052e16" stroke-width="7"/><circle cx="55" cy="58" r="5" fill="${C.g}"/></g>`
+    + `<g transform="translate(150 0)"><rect width="126" height="34" rx="17" fill="${C.w}"/><text x="63" y="23" text-anchor="middle" font-family="Manrope" font-weight="700" font-size="15" fill="#4c1d95">https://ваш.сайт</text></g>`,
+};
+
+// kicker, заголовок (<em> — выделение), подзаголовок, чипы (первый — зелёный), иллюстрация
+const COVERS = [
+  ['01-landing', 'Лендинг', 'Лендинг<br><em>под ключ</em>', 'Структура, вёрстка, форма заявок и публикация', ['3–7 дней', 'Адаптив', 'Метрика'], 'tilda'],
+  ['02-markup', 'Вёрстка', 'Вёрстка<br>по <em>макету</em>', 'Из Figma в адаптивный HTML, CSS и JS', ['Точно по макету', 'Адаптив'], 'code'],
+  ['03-site-fixes', 'Доработка', '<em>Правки</em><br>сайта', 'Tilda, WordPress, HTML: исправлю и доработаю', ['От 1 дня', 'Ошибки', 'Новые блоки'], 'fix'],
+  ['04-chat-bot', 'Чат-бот', 'Чат-бот<br>для <em>бизнеса</em>', 'MAX · VK · Telegram: запись, заявки, оплата', ['Под ключ', 'Админка', 'Оплата'], 'bot'],
+  ['05-ai-assistant', 'Нейросети', '<em>ИИ</em>-<br>ассистент', 'Отвечает клиентам по вашей базе знаний 24/7', ['24/7', 'Сайт', 'Мессенджеры'], 'ai'],
+  ['06-parsing', 'Данные', '<em>Парсинг</em><br>сайтов', 'Соберу данные в Excel или Google Таблицы', ['Excel', 'Google Таблицы'], 'parse'],
+  ['07-automation', 'Автоматизация', 'Заявки<br><em>без рутины</em>', 'Сайт → CRM → мессенджер автоматически', ['n8n', 'amoCRM', 'Битрикс24'], 'flow'],
+  ['08-sheets', 'Таблицы', 'Формулы<br>и <em>скрипты</em>', 'Excel и Google Таблицы: отчёты сами собой', ['Формулы', 'Макросы', 'Дашборды'], 'sheet'],
+  ['09-server', 'Запуск', 'Сайт<br>на <em>сервере</em>', 'Домен, HTTPS, хостинг и резервные копии', ['HTTPS', 'Домен', 'Бэкапы'], 'server'],
+];
+
+const index = Number(location.hash.slice(1) || 0);
+const [, kicker, title, sub, chips, art] = COVERS[index];
+document.getElementById('kicker').textContent = kicker;
+document.getElementById('title').innerHTML = title;
+document.getElementById('sub').textContent = sub;
+document.getElementById('chips').innerHTML = chips.map((c, i) => `<span class="chip${i === 0 ? ' go' : ''}">${c}</span>`).join('');
+document.getElementById('art').innerHTML = ART[art];
+window.COVER_NAMES = COVERS.map((c) => c[0]);
+</script>
+</body>
+</html>
